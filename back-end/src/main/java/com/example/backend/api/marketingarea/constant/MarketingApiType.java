@@ -1,4 +1,4 @@
-package com.example.backend.api.global.constant;
+package com.example.backend.api.marketingarea.constant;
 
 import lombok.Getter;
 
