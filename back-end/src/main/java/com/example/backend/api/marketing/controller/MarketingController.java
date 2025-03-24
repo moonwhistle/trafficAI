@@ -22,10 +22,17 @@ public class MarketingController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    // 상권분석 (점포 - 상권)
+    // 상권분석(점포-상권)
     @PostMapping("/stores")
     public ResponseEntity<HttpStatus> saveStores() {
         marketingRequestService.saveStores();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    // 상권분석(길단위인구-행정동)
+    @PostMapping("/populations")
+    public ResponseEntity<HttpStatus> savePopulations() {
+        marketingRequestService.savePopulations();
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }
