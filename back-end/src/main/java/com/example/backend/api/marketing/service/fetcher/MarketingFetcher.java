@@ -1,7 +1,7 @@
-package com.example.backend.api.marketingarea.service.fetcher;
+package com.example.backend.api.marketing.service.fetcher;
 
-import com.example.backend.api.marketingarea.constant.MarketingApiType;
-import com.example.backend.api.marketingarea.infrastructure.RestTemplateMarketingRequester;
+import com.example.backend.api.marketing.constant.MarketingApiType;
+import com.example.backend.api.marketing.infrastructure.RestTemplateMarketingRequester;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
