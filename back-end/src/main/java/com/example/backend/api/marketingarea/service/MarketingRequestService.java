@@ -8,7 +8,9 @@ import com.example.backend.api.marketingarea.repository.ExpenditureCommercialDis
 import com.example.backend.api.marketingarea.service.dto.AreaRequest;
 import com.example.backend.api.marketingarea.service.dto.CommercialDistrictRequest;
 import com.example.backend.api.marketingarea.service.fetcher.MarketingFetcher;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,9 +33,12 @@ public class MarketingRequestService {
 
     public void saveExpenditureDistrict() {
         List<ExpenditureArea> districts = makeExpenditureAreasByDistricts();
-        for(ExpenditureArea area : districts) {
-            if(!expenditureAreaRepository.existsBySignguCdNm(area.getSignguCdNm())) {
+        Set<String> existingSignguCdNms = new HashSet<>(expenditureAreaRepository.findAllSignguCdNms());
+
+        for (ExpenditureArea area : districts) {
+            if (!existingSignguCdNms.contains(area.getSignguCdNm())) {
                 expenditureAreaRepository.save(area);
+                existingSignguCdNms.add(area.getSignguCdNm());
             }
         }
     }
@@ -52,9 +57,12 @@ public class MarketingRequestService {
 
     public void saveExpenditureCommercialDistrict() {
         List<ExpenditureCommercialDistrict> districts = makeCommercialDistricts();
-        for(ExpenditureCommercialDistrict commercialDistrict : districts) {
-            if(!expenditureCommercialDistrictRepository.existsByTrdarCdNm(commercialDistrict.getTrdarCdNm())) {
+        Set<String> existingTrdarCdNm = new HashSet<>(expenditureCommercialDistrictRepository.findAlltrdarCdNm());
+
+        for (ExpenditureCommercialDistrict commercialDistrict : districts) {
+            if (!existingTrdarCdNm.contains(commercialDistrict.getTrdarCdNm())) {
                 expenditureCommercialDistrictRepository.save(commercialDistrict);
+                existingTrdarCdNm.add(commercialDistrict.getTrdarCdNm());
             }
         }
     }
