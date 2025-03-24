@@ -21,4 +21,11 @@ public class MarketingController {
         marketingRequestService.saveExpenditureCommercialDistrict();
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+
+    // 상권분석 (점포 - 상권)
+    @PostMapping("/stores")
+    public ResponseEntity<HttpStatus> saveStores() {
+        marketingRequestService.saveStores();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
 }

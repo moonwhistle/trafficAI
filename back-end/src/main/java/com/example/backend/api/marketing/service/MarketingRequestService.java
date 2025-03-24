@@ -2,8 +2,11 @@ package com.example.backend.api.marketing.service;
 
 import com.example.backend.api.marketing.constant.MarketingApiType;
 import com.example.backend.api.marketing.domain.ExpenditureCommercialDistrict;
+import com.example.backend.api.marketing.domain.Store;
 import com.example.backend.api.marketing.repository.ExpenditureCommercialDistrictRepository;
+import com.example.backend.api.marketing.repository.StoreRepository;
 import com.example.backend.api.marketing.service.dto.CommercialDistrictRequest;
+import com.example.backend.api.marketing.service.dto.StoreRequest;
 import com.example.backend.api.marketing.service.fetcher.MarketingFetcher;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +21,30 @@ public class MarketingRequestService {
 
     private final MarketingFetcher marketingFetcher;
     private final ExpenditureCommercialDistrictRepository expenditureCommercialDistrictRepository;
+    private final StoreRepository storeRepository;
 
     @Value("${INCOME.CONSUMPTION.MARKETING.AREA.API.KEY}")
     private String INCOME_CONSUMPTION_API_KEY;
+
+    @Value("${STORE_API_KEY}")
+    private String STORE_API_KEY;
+
+    public void saveStores() {
+        List<Store> stores = makeStores();
+        storeRepository.saveAll(stores);
+    }
+
+    private List<Store> makeStores() {
+        List<StoreRequest> requests = marketingFetcher.fetchAndParseData(
+                STORE_API_KEY,
+                MarketingApiType.STORE_MARKETING_AREA,
+                StoreRequest.class
+        );
+
+        return requests.stream()
+                .map(StoreRequest::toStore)
+                .toList();
+    }
 
     public void saveExpenditureCommercialDistrict() {
         List<ExpenditureCommercialDistrict> districts = makeCommercialDistricts();
