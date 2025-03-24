@@ -27,7 +27,7 @@ public class RestTemplateMarketingRequester {
         int totalCount = getTotalCount(apiKey, apiType);
         List<String> allData = new ArrayList<>();
 
-        for (int start = INDEX_START; start <= 5; start += BATCH_SIZE) {
+        for (int start = INDEX_START; start <= totalCount; start += BATCH_SIZE) {
             int end = Math.min(start + BATCH_SIZE - 1, totalCount);
             String url = MARKETING_BASE_URL + apiKey + "/json/" + apiType.getType() + "/" + start + "/" + end;
             String response = getData(url);
