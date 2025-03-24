@@ -1,13 +1,16 @@
 package com.example.backend.api.marketing.service;
 
 import com.example.backend.api.marketing.constant.MarketingApiType;
+import com.example.backend.api.marketing.domain.EstimatedSales;
 import com.example.backend.api.marketing.domain.ExpenditureCommercialDistrict;
 import com.example.backend.api.marketing.domain.Population;
 import com.example.backend.api.marketing.domain.Store;
+import com.example.backend.api.marketing.repository.EstimatedSalesRepository;
 import com.example.backend.api.marketing.repository.ExpenditureCommercialDistrictRepository;
 import com.example.backend.api.marketing.repository.PopulationRepository;
 import com.example.backend.api.marketing.repository.StoreRepository;
 import com.example.backend.api.marketing.service.dto.CommercialDistrictRequest;
+import com.example.backend.api.marketing.service.dto.EstimatedSalesRequest;
 import com.example.backend.api.marketing.service.dto.PopulationRequest;
 import com.example.backend.api.marketing.service.dto.StoreRequest;
 import com.example.backend.api.marketing.service.fetcher.MarketingFetcher;
@@ -26,6 +29,7 @@ public class MarketingRequestService {
     private final ExpenditureCommercialDistrictRepository expenditureCommercialDistrictRepository;
     private final StoreRepository storeRepository;
     private final PopulationRepository populationRepository;
+    private final EstimatedSalesRepository estimatedSalesRepository;
 
     @Value("${INCOME.CONSUMPTION.MARKETING.AREA.API.KEY}")
     private String INCOME_CONSUMPTION_API_KEY;
@@ -35,6 +39,26 @@ public class MarketingRequestService {
 
     @Value("${POPULATION.API.KEY}")
     private String POPULATION_API_KEY;
+
+    @Value("${ESTIMATED_SALES_API_KEY}")
+    private String ESTIMATED_SALES_API_KEY;
+
+    public void saveEstimatedSales() {
+        List<EstimatedSales> estimatedSales = makeEstimatedSales();
+        estimatedSalesRepository.saveAll(estimatedSales);
+    }
+
+    private List<EstimatedSales> makeEstimatedSales() {
+        List<EstimatedSalesRequest> requests = marketingFetcher.fetchAndParseData(
+                ESTIMATED_SALES_API_KEY,
+                MarketingApiType.ESTIMATED_SALES_MARKETING_AREA,
+                EstimatedSalesRequest.class
+        );
+
+        return requests.stream()
+                .map(EstimatedSalesRequest::toEstimatedSales)
+                .toList();
+    }
 
     public void savePopulations() {
         List<Population> populations = makePopulations();

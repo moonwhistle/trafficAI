@@ -35,4 +35,11 @@ public class MarketingController {
         marketingRequestService.savePopulations();
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+
+    // 서울시 상권분석서비스(추정매출-상권)
+    @PostMapping("/estimated-sales")
+    public ResponseEntity<HttpStatus> saveEstimatedSales() {
+        marketingRequestService.saveEstimatedSales();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
 }
