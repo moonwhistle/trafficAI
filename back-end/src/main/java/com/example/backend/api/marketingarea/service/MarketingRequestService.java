@@ -1,8 +1,11 @@
 package com.example.backend.api.marketingarea.service;
 
 import com.example.backend.api.marketingarea.constant.MarketingApiType;
+import com.example.backend.api.marketingarea.domain.ExpenditureArea;
 import com.example.backend.api.marketingarea.domain.ExpenditureCommercialDistrict;
+import com.example.backend.api.marketingarea.repository.ExpenditureAreaRepository;
 import com.example.backend.api.marketingarea.repository.ExpenditureCommercialDistrictRepository;
+import com.example.backend.api.marketingarea.service.dto.AreaRequest;
 import com.example.backend.api.marketingarea.service.dto.CommercialDistrictRequest;
 import com.example.backend.api.marketingarea.service.fetcher.MarketingFetcher;
 import java.util.List;
@@ -18,9 +21,34 @@ public class MarketingRequestService {
 
     private final MarketingFetcher marketingFetcher;
     private final ExpenditureCommercialDistrictRepository expenditureCommercialDistrictRepository;
+    private final ExpenditureAreaRepository expenditureAreaRepository;
 
     @Value("${INCOME.CONSUMPTION.MARKETING.AREA.API.KEY}")
     private String INCOME_CONSUMPTION_API_KEY;
+
+    @Value("${BOROUGH.API.KEY}")
+    private String BOROUGH_API_KEY;
+
+    public void saveExpenditureDistrict() {
+        List<ExpenditureArea> districts = makeExpenditureAreasByDistricts();
+        for(ExpenditureArea area : districts) {
+            if(!expenditureAreaRepository.existsBySignguCdNm(area.getSignguCdNm())) {
+                expenditureAreaRepository.save(area);
+            }
+        }
+    }
+
+    private List<ExpenditureArea> makeExpenditureAreasByDistricts() {
+        List<AreaRequest> requests = marketingFetcher.fetchAndParseData(
+                BOROUGH_API_KEY,
+                MarketingApiType.INCOME_CONSUMPTION_DISTRICT,
+                AreaRequest.class
+        );
+
+        return requests.stream()
+                .map(AreaRequest::toExpenditureArea)
+                .toList();
+    }
 
     public void saveExpenditureCommercialDistrict() {
         List<ExpenditureCommercialDistrict> districts = makeCommercialDistricts();

@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
+// 상권분석 (소득소비 - 자치구, 행정동)
 public class ExpenditureArea {
 
     @Id
