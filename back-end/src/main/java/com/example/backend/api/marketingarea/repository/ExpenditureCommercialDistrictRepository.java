@@ -4,6 +4,4 @@ import com.example.backend.api.marketingarea.domain.ExpenditureCommercialDistric
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ExpenditureCommercialDistrictRepository extends JpaRepository<ExpenditureCommercialDistrict, Long> {
-
-    boolean existsByTrdarCdNm(String trdarCdNm);
 }

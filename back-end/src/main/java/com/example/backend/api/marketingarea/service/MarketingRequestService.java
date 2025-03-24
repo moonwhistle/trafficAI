@@ -31,11 +31,7 @@ public class MarketingRequestService {
 
     public void saveExpenditureDistrict() {
         List<ExpenditureArea> districts = makeExpenditureAreasByDistricts();
-        for(ExpenditureArea area : districts) {
-            if(!expenditureAreaRepository.existsBySignguCdNm(area.getSignguCdNm())) {
-                expenditureAreaRepository.save(area);
-            }
-        }
+        expenditureAreaRepository.saveAll(districts);
     }
 
     private List<ExpenditureArea> makeExpenditureAreasByDistricts() {
@@ -52,11 +48,7 @@ public class MarketingRequestService {
 
     public void saveExpenditureCommercialDistrict() {
         List<ExpenditureCommercialDistrict> districts = makeCommercialDistricts();
-        for(ExpenditureCommercialDistrict commercialDistrict : districts) {
-            if(!expenditureCommercialDistrictRepository.existsByTrdarCdNm(commercialDistrict.getTrdarCdNm())) {
-                expenditureCommercialDistrictRepository.save(commercialDistrict);
-            }
-        }
+        expenditureCommercialDistrictRepository.saveAll(districts);
     }
 
     private List<ExpenditureCommercialDistrict> makeCommercialDistricts() {
