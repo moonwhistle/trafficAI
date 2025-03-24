@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-// 상권분석 (소득소비 - 상권)
-public class ExpenditureCommercialDistrict {
+// 상권분석 (소득소비 - 자치구, 행정동)
+public class ExpenditureArea {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,16 +27,10 @@ public class ExpenditureCommercialDistrict {
     private String stdrYyquCd;  // 기준_년분기_코드
 
     @Column(nullable = false)
-    private String trdarSeCd;  // 상권_구분_코드
+    private String signguCd;  // 행정동_코드
 
     @Column(nullable = false)
-    private String trdarSeCdNm;  // 상권_구분_코드_명
-
-    @Column(nullable = false)
-    private String trdarCd;  // 상권_코드
-
-    @Column(nullable = false)
-    private String trdarCdNm;  // 상권_코드_명
+    private String signguCdNm;  // 행정동_코드_명
 
     @Column(nullable = false)
     private long mtAvrgIncomeAmt;  // 월_평균_소득_금액
@@ -63,14 +57,17 @@ public class ExpenditureCommercialDistrict {
     private long trnsportExpndtrTotamt;  // 교통_지출_총금액
 
     @Column(nullable = false)
-    private long lsrExpndtrTotamt;  // 여가_지출_총금액
-
-    @Column(nullable = false)
-    private long clturExpndtrTotamt;  // 문화_지출_총금액
-
-    @Column(nullable = false)
     private long edcExpndtrTotamt;  // 교육_지출_총금액
 
     @Column(nullable = false)
     private long plesrExpndtrTotamt;  // 유흥_지출_총금액
+
+    @Column(nullable = false)
+    private long lsrClturExpndtrTotamt;  // 여가_문화_지출_총금액
+
+    @Column(nullable = false)
+    private long etcExpndtrTotamt;  // 기타_지출_총금액
+
+    @Column(nullable = false)
+    private long fdExpndtrTotamt;  // 음식_지출_총금액
 }
