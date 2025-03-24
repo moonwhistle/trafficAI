@@ -1,6 +1,6 @@
-package com.example.backend.api.marketingarea.controller;
+package com.example.backend.api.marketing.controller;
 
-import com.example.backend.api.marketingarea.service.MarketingRequestService;
+import com.example.backend.api.marketing.service.MarketingRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,6 @@ public class MarketingController {
     @PostMapping("/expenditure-commercial-districts")
     public ResponseEntity<HttpStatus> saveExpenditureCommercialDistrict() {
         marketingRequestService.saveExpenditureCommercialDistrict();
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-    }
-
-    // 상권분석(소득소비-자치구)
-    @PostMapping("/expenditure-districts")
-    public ResponseEntity<HttpStatus> saveExpenditureAreas() {
-        marketingRequestService.saveExpenditureDistrict();
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }

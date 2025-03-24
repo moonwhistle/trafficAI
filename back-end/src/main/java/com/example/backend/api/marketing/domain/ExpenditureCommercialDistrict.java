@@ -1,4 +1,4 @@
-package com.example.backend.api.marketingarea.domain;
+package com.example.backend.api.marketing.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
