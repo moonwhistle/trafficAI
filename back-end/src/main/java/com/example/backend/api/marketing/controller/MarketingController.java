@@ -42,4 +42,11 @@ public class MarketingController {
         marketingRequestService.saveEstimatedSales();
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+
+    // 서울시 행정동별 대중교통 총 승차 승객수
+    @PostMapping("/passengers")
+    public ResponseEntity<HttpStatus> savePassengers() {
+        marketingRequestService.savePassengers();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
 }
