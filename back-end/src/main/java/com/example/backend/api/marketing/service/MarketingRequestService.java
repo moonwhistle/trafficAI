@@ -148,7 +148,6 @@ public class MarketingRequestService {
                 OfficetelValuationRequest.class
         );
 
-        // 두 요청의 데이터를 합쳐서 반환
         return Stream.concat(requests1.stream(), requests2.stream())
                 .map(OfficetelValuationRequest::toOfficetelValuation)
                 .toList();

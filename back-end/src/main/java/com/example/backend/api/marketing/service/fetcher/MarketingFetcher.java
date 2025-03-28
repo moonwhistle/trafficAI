@@ -50,25 +50,22 @@ public class MarketingFetcher {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            // API에서 데이터 가져오기
             List<String> data = requester.requestOfficetelData(apiKey, apiType);
 
             for (String json : data) {
                 // UTF-8로 인코딩된 데이터 처리
-                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);  // JSON 문자열을 UTF-8 바이트 배열로 변환
-                String utf8Json = new String(bytes, StandardCharsets.UTF_8);  // UTF-8로 다시 문자열로 변환
+                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                String utf8Json = new String(bytes, StandardCharsets.UTF_8);
 
-                // UTF-8로 변환된 문자열을 JsonNode로 파싱
                 JsonNode jsonNode = mapper.readTree(utf8Json);
-                JsonNode dataNode = jsonNode.path("data");  // "data" 노드에 접근
+                JsonNode dataNode = jsonNode.path("data");
 
                 if (dataNode.isArray()) {
-                    // "data" 배열을 순회하며 각 항목을 T 타입으로 파싱
                     List<T> parsedData = mapper.readValue(
-                            dataNode.toString(),  // 배열을 JSON 문자열로 변환
+                            dataNode.toString(),
                             mapper.getTypeFactory().constructCollectionType(List.class, clazz)
                     );
-                    result.addAll(parsedData);  // 파싱한 데이터를 결과 리스트에 추가
+                    result.addAll(parsedData);
                 }
                 System.out.println(result);
             }
