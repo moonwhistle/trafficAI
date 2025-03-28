@@ -49,4 +49,11 @@ public class MarketingController {
         marketingRequestService.savePassengers();
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+
+    //오피스텔 기준 시가
+    @PostMapping("/officetel-valuation")
+    public ResponseEntity<HttpStatus> saveOfficetelValuation(){
+        marketingRequestService.saveOfficetelValuation();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
 }
