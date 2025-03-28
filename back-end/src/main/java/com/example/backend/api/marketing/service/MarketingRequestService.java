@@ -132,7 +132,6 @@ public class MarketingRequestService {
 
     public void saveOfficetelValuation() {
         List<OfficetelValuation> valuations = makeOfficetelValuations();
-        System.out.println("데이터" + valuations);
         officetelValuationRepository.saveAll(valuations);
     }
 

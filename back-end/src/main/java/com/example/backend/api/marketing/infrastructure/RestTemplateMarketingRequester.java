@@ -56,7 +56,6 @@ public class RestTemplateMarketingRequester {
                     + "?page=" + start
                     + "&perPage=" + BATCH_SIZE
                     + "&serviceKey=" + encodedApiKey;
-            System.out.println(url);
 
             String response = getData(url);
             allData.add(response);
