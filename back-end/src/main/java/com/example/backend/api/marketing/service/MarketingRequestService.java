@@ -1,23 +1,14 @@
 package com.example.backend.api.marketing.service;
 
 import com.example.backend.api.marketing.constant.MarketingApiType;
-import com.example.backend.api.marketing.domain.EstimatedSales;
-import com.example.backend.api.marketing.domain.ExpenditureCommercialDistrict;
-import com.example.backend.api.marketing.domain.Passenger;
-import com.example.backend.api.marketing.domain.Population;
-import com.example.backend.api.marketing.domain.Store;
-import com.example.backend.api.marketing.repository.EstimatedSalesRepository;
-import com.example.backend.api.marketing.repository.ExpenditureCommercialDistrictRepository;
-import com.example.backend.api.marketing.repository.PassengerRepository;
-import com.example.backend.api.marketing.repository.PopulationRepository;
-import com.example.backend.api.marketing.repository.StoreRepository;
-import com.example.backend.api.marketing.service.dto.CommercialDistrictRequest;
-import com.example.backend.api.marketing.service.dto.EstimatedSalesRequest;
-import com.example.backend.api.marketing.service.dto.PassengerRequest;
-import com.example.backend.api.marketing.service.dto.PopulationRequest;
-import com.example.backend.api.marketing.service.dto.StoreRequest;
+import com.example.backend.api.marketing.domain.*;
+import com.example.backend.api.marketing.repository.*;
+import com.example.backend.api.marketing.service.dto.*;
 import com.example.backend.api.marketing.service.fetcher.MarketingFetcher;
+
 import java.util.List;
+import java.util.stream.Stream;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +25,7 @@ public class MarketingRequestService {
     private final PopulationRepository populationRepository;
     private final EstimatedSalesRepository estimatedSalesRepository;
     private final PassengerRepository passengerRepository;
+    private final OfficetelValuationRepository officetelValuationRepository;
 
     @Value("${INCOME.CONSUMPTION.MARKETING.AREA.API.KEY}")
     private String INCOME_CONSUMPTION_API_KEY;
@@ -49,6 +41,9 @@ public class MarketingRequestService {
 
     @Value("${PASSENGER_API_KEY}")
     private String PASSENGER_API_KEY;
+
+    @Value("${OFFICETEL_API_KEY}")
+    private String OFFICETEL_VALUATION_API_KEY;
 
     public void savePassengers() {
         List<Passenger> passengers = makePassengers();
@@ -132,6 +127,31 @@ public class MarketingRequestService {
 
         return requests.stream()
                 .map(CommercialDistrictRequest::toCommercialDistrict)
+                .toList();
+    }
+
+    public void saveOfficetelValuation() {
+        List<OfficetelValuation> valuations = makeOfficetelValuations();
+        System.out.println("데이터" + valuations);
+        officetelValuationRepository.saveAll(valuations);
+    }
+
+    private List<OfficetelValuation> makeOfficetelValuations() {
+        List<OfficetelValuationRequest> requests1 = marketingFetcher.fetchAndParseOfficetelData(
+                OFFICETEL_VALUATION_API_KEY,
+                MarketingApiType.OFFICETEL_VALUATION_1,
+                OfficetelValuationRequest.class
+        );
+
+        List<OfficetelValuationRequest> requests2 = marketingFetcher.fetchAndParseOfficetelData(
+                OFFICETEL_VALUATION_API_KEY,
+                MarketingApiType.OFFICETEL_VALUATION_2,
+                OfficetelValuationRequest.class
+        );
+
+        // 두 요청의 데이터를 합쳐서 반환
+        return Stream.concat(requests1.stream(), requests2.stream())
+                .map(OfficetelValuationRequest::toOfficetelValuation)
                 .toList();
     }
 }
