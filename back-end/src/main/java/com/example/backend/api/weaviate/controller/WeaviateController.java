@@ -34,14 +34,9 @@ public class WeaviateController {
         return ResponseEntity.ok("All schemas created successfully");
     }
     @PostMapping("/transfer-data")
-    public String transferDummyData() {
-        try {
-            dataTransferService.transferAllData();
-            return "Data transfer completed.";
-        } catch (Exception e) {
-            log.error("Error occurred during data transfer: {}", e.getMessage(), e);
-            return "Data transfer failed.";
-        }
+    public ResponseEntity<String> transferDummyData() {
+        dataTransferService.transferAddressDataToWeaviate();
+        return ResponseEntity.ok("success");
     }
 
     @PostMapping("/EstimatedSales")
@@ -52,7 +47,7 @@ public class WeaviateController {
 
     @PostMapping("/population")
     public ResponseEntity<String> transferPopulationData(){
-        dataTransferService.transferEstimatedSalesToWeaviate();
+        dataTransferService.transferPopulationDataToWeaviate();
         return ResponseEntity.ok("PopulationData transfer successfully");
     }
 

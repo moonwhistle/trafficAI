@@ -28,12 +28,14 @@ public class WeaviateService {
     }
 
     public void createAllSchemas() {
-        createEstimatedSalesSchema();
-        createExpenditureCommercialDistrictSchema();
+        //createEstimatedSalesSchema();
+        //createExpenditureCommercialDistrictSchema();
         //createOfficetelValuationSchema();
-        createPassengerSchema();
-        createPopulationSchema();
-        createStoreSchema();
+        //createPassengerSchema();
+        //createPopulationSchema();
+        //createStoreSchema();
+        //createaddressSchema();
+        //createEstatechema();
     }
 
     private void createEstimatedSalesSchema() {
@@ -161,25 +163,24 @@ public class WeaviateService {
         }
     }
 
-
     private void createOfficetelValuationSchema() {
         List<Property> properties = List.of(
                 Property.builder().name("unique_id").dataType(List.of("string")).build(),
-                Property.builder().name("고시가격").dataType(List.of("string")).build(),  // 고시가격은 string으로 처리
-                Property.builder().name("고시일자").dataType(List.of("string")).build(),
-                Property.builder().name("상가건물블록주소").dataType(List.of("string")).build(),
-                Property.builder().name("상가건물층주소").dataType(List.of("string")).build(),
-                Property.builder().name("건물층구분코드").dataType(List.of("string")).build(),
-                Property.builder().name("상가건물번호").dataType(List.of("string")).build(),
-                Property.builder().name("상가종류코드").dataType(List.of("string")).build(),
-                Property.builder().name("상가건물동주소").dataType(List.of("string")).build(),
-                Property.builder().name("상가건물호주소").dataType(List.of("string")).build(),
-                Property.builder().name("공유면적").dataType(List.of("number")).build(),  // 공유면적은 숫자 형식
-                Property.builder().name("전용면적").dataType(List.of("number")).build(),  // 전용면적은 숫자 형식
-                Property.builder().name("법정동코드").dataType(List.of("string")).build(),
-                Property.builder().name("번지").dataType(List.of("string")).build(),
-                Property.builder().name("특수지코드").dataType(List.of("string")).build(),
-                Property.builder().name("호").dataType(List.of("string")).build()
+                Property.builder().name("official_price").dataType(List.of("string")).build(),  // 고시가격 -> official_price
+                Property.builder().name("official_date").dataType(List.of("string")).build(),  // 고시일자 -> official_date
+                Property.builder().name("building_block_address").dataType(List.of("string")).build(),  // 상가건물블록주소 -> building_block_address
+                Property.builder().name("building_floor_address").dataType(List.of("string")).build(),  // 상가건물층주소 -> building_floor_address
+                Property.builder().name("building_floor_type_code").dataType(List.of("string")).build(),  // 건물층구분코드 -> building_floor_type_code
+                Property.builder().name("building_number").dataType(List.of("string")).build(),  // 상가건물번호 -> building_number
+                Property.builder().name("building_type_code").dataType(List.of("string")).build(),  // 상가종류코드 -> building_type_code
+                Property.builder().name("building_block_subaddress").dataType(List.of("string")).build(),  // 상가건물동주소 -> building_block_subaddress
+                Property.builder().name("building_floor_subaddress").dataType(List.of("string")).build(),  // 상가건물호주소 -> building_floor_subaddress
+                Property.builder().name("shared_area").dataType(List.of("string")).build(),  // 공유면적 -> shared_area
+                Property.builder().name("exclusive_area").dataType(List.of("string")).build(),  // 전용면적 -> exclusive_area
+                Property.builder().name("legal_dong_code").dataType(List.of("string")).build(),  // 법정동코드 -> legal_dong_code
+                Property.builder().name("land_number").dataType(List.of("string")).build(),  // 번지 -> land_number
+                Property.builder().name("special_land_code").dataType(List.of("string")).build(),  // 특수지코드 -> special_land_code
+                Property.builder().name("unit_number").dataType(List.of("string")).build()  // 호 -> unit_number
         );
 
         WeaviateClass officetelClass = WeaviateClass.builder()
@@ -247,7 +248,6 @@ public class WeaviateService {
             System.out.println("Passenger 클래스 조회 성공: " + existingClass.getResult());
         }
     }
-
 
 
     private void createPopulationSchema() {
@@ -325,6 +325,47 @@ public class WeaviateService {
         System.out.println(result);
 
         Result<WeaviateClass> existingClass = weaviateClient.schema().classGetter().withClassName("Store").run();
+        System.out.println(existingClass.getResult());
+    }
+
+
+    private void createaddressSchema() {
+        List<Property> properties = List.of(
+                Property.builder().name("dong_nm").dataType(List.of("string")).build(),
+                Property.builder().name("ctpv_nm").dataType(List.of("string")).build(),
+                Property.builder().name("dong_id").dataType(List.of("string")).build(),
+                Property.builder().name("cgg_nm").dataType(List.of("string")).build()
+
+        );
+
+        WeaviateClass addressClass = WeaviateClass.builder()
+                .className("Address_Master")
+                .properties(properties)
+                .build();
+
+        Result<Boolean> result = weaviateClient.schema().classCreator().withClass(addressClass).run();
+        System.out.println(result);
+
+        Result<WeaviateClass> existingClass = weaviateClient.schema().classGetter().withClassName("Address_Master").run();
+        System.out.println(existingClass.getResult());
+    }
+
+    private void createEstatechema() {
+        List<Property> properties = List.of(
+                Property.builder().name("district_name").dataType(List.of("string")).build(),
+                Property.builder().name("district_code").dataType(List.of("string")).build()
+
+        );
+
+        WeaviateClass estateClass = WeaviateClass.builder()
+                .className("Real_Estate")
+                .properties(properties)
+                .build();
+
+        Result<Boolean> result = weaviateClient.schema().classCreator().withClass(estateClass).run();
+        System.out.println(result);
+
+        Result<WeaviateClass> existingClass = weaviateClient.schema().classGetter().withClassName("Real_Estate").run();
         System.out.println(existingClass.getResult());
     }
 

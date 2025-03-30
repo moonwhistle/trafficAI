@@ -1,5 +1,6 @@
 package com.example.backend.api.weaviate.service;
 
+import io.weaviate.client.v1.schema.model.Property;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -23,21 +24,10 @@ public class DataTransferService {
         this.dataSource = dataSource;
     }
 
-    public void transferAllData() {
-        transferEstimatedSalesToWeaviate();
-        transferExpenditureCommercialDistrictDataToWeaviate();
-        //transferOfficetelValuationDataToWeaviate();
-        transferPassengerDataToWeaviate();
-        transferPopulationDataToWeaviate();
-        transferStoreDataToWeaviate();
-    }
-
     public void transferEstimatedSalesToWeaviate() {
-        String query = "SELECT * FROM estimated_sales LIMIT 10";
+        String query = "SELECT * FROM estimated_sales";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             ObjectsBatcher batcher = weaviateClient.batch().objectsBatcher();
             int count = 0;
@@ -59,52 +49,24 @@ public class DataTransferService {
                 rowData.put("trdar_se_cd_nm", rs.getString("trdar_se_cd_nm"));
 
                 // 숫자형 (double)
-                String[] numericColumns = {
-                        "thsmon_selng_amt", "thsmon_selng_co",
-                        "agrde10selng_amt", "agrde10selng_co",
-                        "agrde20selng_amt", "agrde20selng_co",
-                        "agrde30selng_amt", "agrde30selng_co",
-                        "agrde40selng_amt", "agrde40selng_co",
-                        "agrde50selng_amt", "agrde50selng_co",
-                        "agrde60above_selng_amt", "agrde60above_selng_co",
-                        "fml_selng_amt", "fml_selng_co",
-                        "fri_selng_amt", "fri_selng_co",
-                        "mdwk_selng_amt", "mdwk_selng_co",
-                        "ml_selng_amt", "ml_selng_co",
-                        "mon_selng_amt", "mon_selng_co",
-                        "sat_selng_amt", "sat_selng_co",
-                        "sun_selng_amt", "sun_selng_co",
-                        "thur_selng_amt", "thur_selng_co",
-                        "tues_selng_amt", "tues_selng_co",
-                        "wed_selng_amt", "wed_selng_co",
-                        "wkend_selng_amt", "wkend_selng_co",
-                        "tmzon00to06selng_amt", "tmzon00to06selng_co",
-                        "tmzon06to11selng_amt", "tmzon06to11selng_co",
-                        "tmzon11to14selng_amt", "tmzon11to14selng_co",
-                        "tmzon14to17selng_amt", "tmzon14to17selng_co",
-                        "tmzon17to21selng_amt", "tmzon17to21selng_co",
-                        "tmzon21to24selng_amt", "tmzon21to24selng_co"
-                };
+                String[] numericColumns = {"thsmon_selng_amt", "thsmon_selng_co", "agrde10selng_amt", "agrde10selng_co", "agrde20selng_amt", "agrde20selng_co", "agrde30selng_amt", "agrde30selng_co", "agrde40selng_amt", "agrde40selng_co", "agrde50selng_amt", "agrde50selng_co", "agrde60above_selng_amt", "agrde60above_selng_co", "fml_selng_amt", "fml_selng_co", "fri_selng_amt", "fri_selng_co", "mdwk_selng_amt", "mdwk_selng_co", "ml_selng_amt", "ml_selng_co", "mon_selng_amt", "mon_selng_co", "sat_selng_amt", "sat_selng_co", "sun_selng_amt", "sun_selng_co", "thur_selng_amt", "thur_selng_co", "tues_selng_amt", "tues_selng_co", "wed_selng_amt", "wed_selng_co", "wkend_selng_amt", "wkend_selng_co", "tmzon00to06selng_amt", "tmzon00to06selng_co", "tmzon06to11selng_amt", "tmzon06to11selng_co", "tmzon11to14selng_amt", "tmzon11to14selng_co", "tmzon14to17selng_amt", "tmzon14to17selng_co", "tmzon17to21selng_amt", "tmzon17to21selng_co", "tmzon21to24selng_amt", "tmzon21to24selng_co"};
 
                 for (String column : numericColumns) {
                     double value = rs.getDouble(column);
                     rowData.put(column, rs.wasNull() ? null : value); // NULL 체크
                 }
 
-                batcher.withObject(WeaviateObject.builder()
-                        .className("EstimatedSales")
-                        .properties(rowData)
-                        .build());
+                batcher.withObject(WeaviateObject.builder().className("EstimatedSales").properties(rowData).build());
 
                 count++;
 
-                if (count % 100 == 0) {
+                if (count % 1000 == 0) {
                     batcher.run();
                     batcher = weaviateClient.batch().objectsBatcher();
                 }
             }
 
-            if (count % 100 != 0) {
+            if (count % 1000 != 0) {
                 batcher.run();
             }
 
@@ -115,11 +77,9 @@ public class DataTransferService {
     }
 
     public void transferExpenditureCommercialDistrictDataToWeaviate() {
-        String query = "SELECT * FROM expenditure_commercial_district LIMIT 10";
+        String query = "SELECT * FROM expenditure_commercial_district";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             ObjectsBatcher batcher = weaviateClient.batch().objectsBatcher();
             int count = 0;
@@ -151,22 +111,19 @@ public class DataTransferService {
                 rowData.put("trnsport_expndtr_totamt", rs.getDouble("trnsport_expndtr_totamt"));
 
                 // Weaviate 배치 처리
-                batcher.withObject(WeaviateObject.builder()
-                        .className("ExpenditureCommercialDistrict")
-                        .properties(rowData)
-                        .build());
+                batcher.withObject(WeaviateObject.builder().className("ExpenditureCommercialDistrict").properties(rowData).build());
 
                 count++;
 
                 // 배치 전송
-                if (count % 100 == 0) {
+                if (count % 1000 == 0) {
                     batcher.run();
                     batcher = weaviateClient.batch().objectsBatcher();
                 }
             }
 
             // 남은 데이터 처리
-            if (count % 100 != 0) {
+            if (count % 1000 != 0) {
                 batcher.run();
             }
 
@@ -177,11 +134,9 @@ public class DataTransferService {
     }
 
     public void transferOfficetelValuationDataToWeaviate() {
-        String query = "SELECT * FROM officetel_valuation LIMIT 10";
+        String query = "SELECT * FROM officetel_valuation";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             ObjectsBatcher batcher = weaviateClient.batch().objectsBatcher();
             int count = 0;
@@ -191,39 +146,36 @@ public class DataTransferService {
 
                 // MySQL 데이터 읽어오기 및 변환
                 rowData.put("unique_id", rs.getString("id"));  // id는 문자열로 처리
-                rowData.put("건물층구분코드", rs.getString("건물층구분코드"));
-                rowData.put("고시가격", rs.getObject("고시가격") != null ? Double.valueOf(rs.getString("고시가격")) : null);  // 고시가격은 숫자로 변환
-                rowData.put("고시일자", rs.getString("고시일자"));
-                rowData.put("공유면적", rs.getObject("공유면적") != null ? Double.valueOf(rs.getString("공유면적")) : null);  // 공유면적은 숫자로 변환
-                rowData.put("번지", rs.getString("번지"));
-                rowData.put("법정동코드", rs.getString("법정동코드"));
-                rowData.put("상가건물동주소", rs.getString("상가건물동주소"));
-                rowData.put("상가건물번호", rs.getString("상가건물번호"));
-                rowData.put("상가건물블록주소", rs.getString("상가건물블록주소"));
-                rowData.put("상가건물층주소", rs.getString("상가건물층주소"));
-                rowData.put("상가건물호주소", rs.getString("상가건물호주소"));
-                rowData.put("상가종류코드", rs.getString("상가종류코드"));
-                rowData.put("전용면적", rs.getObject("전용면적") != null ? Double.valueOf(rs.getString("전용면적")) : null);  // 전용면적은 숫자로 변환
-                rowData.put("특수지코드", rs.getString("특수지코드"));
-                rowData.put("호", rs.getString("호"));
+                rowData.put("building_floor_type_code", rs.getString("건물층구분코드"));
+                rowData.put("official_price", rs.getString("고시가격"));  // 고시가격은 문자열로 처리
+                rowData.put("official_date", rs.getString("고시일자"));
+                rowData.put("shared_area", rs.getString("공유면적"));  // 공유면적은 숫자로 변환
+                rowData.put("land_number", rs.getString("번지"));
+                rowData.put("legal_dong_code", rs.getString("법정동코드"));
+                rowData.put("building_block_subaddress", rs.getString("상가건물동주소"));
+                rowData.put("building_number", rs.getString("상가건물번호"));
+                rowData.put("building_block_address", rs.getString("상가건물블록주소"));
+                rowData.put("building_floor_address", rs.getString("상가건물층주소"));
+                rowData.put("building_floor_subaddress", rs.getString("상가건물호주소"));
+                rowData.put("building_type_code", rs.getString("상가종류코드"));
+                rowData.put("exclusive_area", rs.getString("전용면적"));  // 전용면적은 숫자로 변환
+                rowData.put("special_land_code", rs.getString("특수지코드"));
+                rowData.put("unit_number", rs.getString("호"));
 
                 // Weaviate에 데이터 추가
-                batcher.withObject(WeaviateObject.builder()
-                        .className("OfficetelValuation")
-                        .properties(rowData)
-                        .build());
+                batcher.withObject(WeaviateObject.builder().className("OfficetelValuation").properties(rowData).build());
 
                 count++;
 
                 // 10개마다 배치 실행
-                if (count % 100 == 0) {
+                if (count % 1000 == 0) {
                     batcher.run();
                     batcher = weaviateClient.batch().objectsBatcher();
                 }
             }
 
             // 남은 데이터가 있을 경우 처리
-            if (count % 100 != 0) {
+            if (count % 1000 != 0) {
                 batcher.run();
             }
 
@@ -234,11 +186,9 @@ public class DataTransferService {
     }
 
     public void transferPassengerDataToWeaviate() {
-        String query = "SELECT * FROM passenger LIMIT 10";
+        String query = "SELECT * FROM passenger";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             ObjectsBatcher batcher = weaviateClient.batch().objectsBatcher();
             int count = 0;
@@ -278,21 +228,18 @@ public class DataTransferService {
                 rowData.put("psng_no23", rs.getInt("psng_no23"));  // 승객_수_23시
 
                 // Weaviate에 데이터 추가
-                batcher.withObject(WeaviateObject.builder()
-                        .className("Passenger")
-                        .properties(rowData)
-                        .build());
+                batcher.withObject(WeaviateObject.builder().className("Passenger").properties(rowData).build());
 
                 count++;
 
-                if (count % 100 == 0) {
+                if (count % 1000 == 0) {
                     batcher.run();  // 일정 갯수마다 배치 실행
                     batcher = weaviateClient.batch().objectsBatcher();  // 새로운 배치 생성
                 }
             }
 
             // 남은 데이터 처리
-            if (count % 100 != 0) {
+            if (count % 1000 != 0) {
                 batcher.run();
             }
 
@@ -303,11 +250,9 @@ public class DataTransferService {
     }
 
     public void transferPopulationDataToWeaviate() {
-        String query = "SELECT * FROM population LIMIT 10";
+        String query = "SELECT * FROM population";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             ObjectsBatcher batcher = weaviateClient.batch().objectsBatcher();
             int count = 0;
@@ -343,22 +288,19 @@ public class DataTransferService {
                 rowData.put("wed_flpop_co", rs.getLong("wed_flpop_co")); // number (bigint -> number)
 
                 // Weaviate에 데이터 추가
-                batcher.withObject(WeaviateObject.builder()
-                        .className("Population")
-                        .properties(rowData)
-                        .build());
+                batcher.withObject(WeaviateObject.builder().className("Population").properties(rowData).build());
 
                 count++;
 
                 // 일정 수량마다 배치 전송
-                if (count % 100 == 0) {
+                if (count % 1000 == 0) {
                     batcher.run();
                     batcher = weaviateClient.batch().objectsBatcher();
                 }
             }
 
             // 남은 데이터 전송
-            if (count % 100 != 0) {
+            if (count % 1000 != 0) {
                 batcher.run();
             }
 
@@ -370,11 +312,9 @@ public class DataTransferService {
 
 
     public void transferStoreDataToWeaviate() {
-        String query = "SELECT * FROM store LIMIT 10";
+        String query = "SELECT * FROM store";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             ObjectsBatcher batcher = weaviateClient.batch().objectsBatcher();
             int count = 0;
@@ -409,25 +349,66 @@ public class DataTransferService {
 
                 System.out.println("Fetched Data: " + rowData);
 
-                batcher.withObject(WeaviateObject.builder()
-                        .className("Store")
-                        .properties(rowData)
-                        .build());
+                batcher.withObject(WeaviateObject.builder().className("Store").properties(rowData).build());
 
                 count++;
 
-                if (count % 100 == 0) {
+                if (count % 1000 == 0) {
                     batcher.run();
                     batcher = weaviateClient.batch().objectsBatcher();
                 }
             }
 
             // 남은 데이터가 있으면 처리
-            if (count % 100 != 0) {
+            if (count % 1000 != 0) {
                 batcher.run();
             }
 
             System.out.println("총 " + count + "개의 Store 데이터가 Weaviate에 업로드되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void transferEstateDataToWeaviate() {
+        String query = "SELECT * FROM real_estate";
+
+        try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+
+            ObjectsBatcher batcher = weaviateClient.batch().objectsBatcher();
+            while (rs.next()) {
+                Map<String, Object> rowData = new HashMap<>();
+
+                rowData.put("district_name", rs.getString("district_name"));
+                rowData.put("district_code", rs.getString("district_code"));
+
+                batcher.withObject(WeaviateObject.builder().className("Real_Estate").properties(rowData).build());
+
+                batcher.run();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void transferAddressDataToWeaviate() {
+        String query = "SELECT * FROM address_master";
+
+        try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+
+            ObjectsBatcher batcher = weaviateClient.batch().objectsBatcher();
+
+            while (rs.next()) {
+                Map<String, Object> rowData = new HashMap<>();
+
+                rowData.put("dong_nm", rs.getString("dong_nm"));
+                rowData.put("ctpv_nm", rs.getString("ctpv_nm"));
+                rowData.put("dong_id", rs.getString("dong_id"));
+                rowData.put("cgg_nm", rs.getString("cgg_nm"));
+
+                batcher.withObject(WeaviateObject.builder().className("Address_Master").properties(rowData).build());
+                batcher.run();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -18,11 +18,13 @@ public class TestService {
 
     public void delete() {
         List<String> classNames = List.of(
-                "Passenger",
-                "Store",
-                "Population",
-                //"OfficetelValuation",
-                "ExpenditureCommercialDistrict","EstimatedSales"
+                //"Address_Master"
+                //"EstimatedSales"
+                //"Passenger",
+                //"Store",
+                //"Population",
+                //"OfficetelValuation"
+                //"ExpenditureCommercialDistrict","EstimatedSales"
         );
 
         List<Result<Boolean>> deleteResults = new ArrayList<>();
